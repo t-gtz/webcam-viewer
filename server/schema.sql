@@ -40,9 +40,9 @@ CREATE INDEX IF NOT EXISTS idx_webcams_category ON webcams(category);
 INSERT OR IGNORE INTO webcams 
 (id, name, city, country, latitude, longitude, stream_url, stream_type, category, source)
 VALUES
-('de-berlin-001', 'Berlin Fernsehturm', 'Berlin', 'Deutschland', 52.5200, 13.4050, 'http://example.com/berlin', 'http', 'city', 'builtin'),
-('de-hamburg-001', 'Hamburg Hafen', 'Hamburg', 'Deutschland', 53.5511, 9.9850, 'http://example.com/hamburg', 'http', 'city', 'builtin'),
-('de-munich-001', 'München Marienplatz', 'München', 'Deutschland', 48.1351, 11.5820, 'http://example.com/munich', 'http', 'city', 'builtin'),
-('de-cologne-001', 'Köln Dom', 'Köln', 'Deutschland', 50.9413, 6.9581, 'http://example.com/cologne', 'http', 'city', 'builtin'),
-('ch-zurich-001', 'Zürich Main Street', 'Zürich', 'Schweiz', 47.3769, 8.5472, 'http://example.com/zurich', 'http', 'city', 'builtin'),
-('at-vienna-001', 'Wien Stephansdom', 'Wien', 'Österreich', 48.2082, 16.3738, 'http://example.com/vienna', 'http', 'city', 'builtin');
+('de-berlin-002', 'NASA TV Live', 'Space', 'USA', 28.5721, -80.6480, 'https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8', 'hls', 'other', 'builtin'),
+('de-hamburg-002', 'Test Stream 1', 'Hamburg', 'Deutschland', 53.5511, 9.9850, 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', 'hls', 'city', 'builtin'),
+('de-munich-002', 'Akamai Live Test', 'München', 'Deutschland', 48.1351, 11.5820, 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8', 'hls', 'city', 'builtin'),
+('de-cologne-002', 'Test Stream 2', 'Köln', 'Deutschland', 50.9413, 6.9581, 'https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8', 'hls', 'city', 'builtin'),
+('ch-zurich-002', 'Apple Test Stream', 'Zürich', 'Schweiz', 47.3769, 8.5472, 'http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8', 'hls', 'city', 'builtin'),
+('at-vienna-002', 'Wien Live', 'Wien', 'Österreich', 48.2082, 16.3738, 'https://test-streams.mux.dev/test_001/stream.m3u8', 'hls', 'city', 'builtin');
