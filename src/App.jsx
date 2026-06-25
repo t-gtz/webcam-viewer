@@ -23,9 +23,26 @@ export default function App() {
   const fetchWebcams = async () => {
     try {
       setIsLoading(true);
+      
+      // Fetch local DB webcams
       const response = await fetch('/api/webcams?limit=500');
       const data = await response.json();
-      setWebcams(data.webcams);
+      let allWebcams = data.webcams || [];
+
+      // Fetch EarthCam proxy API
+      try {
+        const earthcamResponse = await fetch('/api/earthcam');
+        if (earthcamResponse.ok) {
+          const earthcamData = await earthcamResponse.json();
+          if (earthcamData.success && earthcamData.webcams) {
+            allWebcams = [...allWebcams, ...earthcamData.webcams];
+          }
+        }
+      } catch (ecErr) {
+        console.warn('Failed to fetch EarthCam webcams:', ecErr);
+      }
+
+      setWebcams(allWebcams);
       setError(null);
     } catch (err) {
       setError(`Fehler beim Laden: ${err.message}`);

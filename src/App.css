@@ -252,6 +252,16 @@ body {
   background-color: #ef4444;
 }
 
+.earthcam-badge {
+  background-color: #2563eb;
+  color: white;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
 /* Cluster Icons */
 .custom-cluster-icon {
   background: rgba(59, 130, 246, 0.8);

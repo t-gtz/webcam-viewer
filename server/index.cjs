@@ -4,6 +4,7 @@ const path = require('path');
 const cors = require('cors');
 const compression = require('compression');
 const fs = require('fs').promises;
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -130,6 +131,78 @@ app.get('/api/stream/:id', (req, res) => {
       });
     }
   );
+});
+
+// GET /api/earthcam - EarthCam proxy endpoint
+app.get('/api/earthcam', async (req, res) => {
+  try {
+    const apiKey = process.env.EARTHCAM_API_KEY;
+    const apiUrl = process.env.EARTHCAM_API_URL;
+
+    // Check if API key is configured
+    if (!apiKey || apiKey === 'your_earthcam_api_key_here') {
+      console.warn("EarthCam API key not configured. Returning mock data.");
+      // Return mock EarthCam data so the frontend has something to display
+      return res.json({
+        success: true,
+        webcams: [
+          {
+            id: 'earthcam-nyc',
+            name: 'EarthCam: Times Square',
+            city: 'New York',
+            country: 'USA',
+            latitude: 40.7580,
+            longitude: -73.9855,
+            stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', // Mock HLS stream
+            stream_type: 'hls',
+            category: 'city',
+            source: 'earthcam'
+          },
+          {
+            id: 'earthcam-miami',
+            name: 'EarthCam: Miami Beach',
+            city: 'Miami',
+            country: 'USA',
+            latitude: 25.7906,
+            longitude: -80.1300,
+            stream_url: 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
+            stream_type: 'hls',
+            category: 'beach',
+            source: 'earthcam'
+          }
+        ]
+      });
+    }
+
+    // Example of how the real API fetch would look:
+    /*
+    const fetchResponse = await fetch(`${apiUrl}/cameras?api_key=${apiKey}`);
+    const data = await fetchResponse.json();
+    
+    // Map EarthCam data to our internal format
+    const mappedCameras = data.map(cam => ({
+      id: `earthcam-${cam.id}`,
+      name: cam.title,
+      city: cam.location.city,
+      country: cam.location.country,
+      latitude: cam.lat,
+      longitude: cam.lng,
+      stream_url: cam.hls_url,
+      stream_type: 'hls',
+      category: 'other',
+      source: 'earthcam'
+    }));
+
+    res.json({ success: true, webcams: mappedCameras });
+    */
+
+    // Fallback if key is provided but logic above is commented out:
+    res.status(501).json({ error: "EarthCam integration is mocked. Uncomment fetch logic in server/index.cjs once API details are known." });
+
+  } catch (err) {
+    console.error('EarthCam API Error:', err);
+    res.status(500).json({ error: 'Failed to fetch from EarthCam API' });
+  }
 });
 
 // GET /api/thumbnails/:id - Thumbnail Download
