@@ -84,10 +84,68 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 @keyframes pulse{0%{transform:translate(-50%,-50%) scale(1);opacity:0.9}70%{transform:translate(-50%,-50%) scale(2.6);opacity:0}100%{opacity:0}}
 
 /* Cluster icon visual polish */
-.custom-cluster-icon{background:linear-gradient(135deg,var(--accent),#7afcff);border:2px solid rgba(255,255,255,0.9);border-radius:50%;color:white;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,0.18)}
-.custom-cluster-icon.small{width:36px;height:36px}
-.custom-cluster-icon.medium{width:46px;height:46px}
-.custom-cluster-icon.large{width:64px;height:64px}
+.custom-cluster-icon, .cluster-icon {
+  background: linear-gradient(135deg, var(--accent), #7afcff);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  color: white;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  box-sizing: border-box;
+}
+.custom-cluster-icon.small, .cluster-icon.small { width: 36px; height: 36px; font-size: 12px; }
+.custom-cluster-icon.medium, .cluster-icon.medium { width: 46px; height: 46px; font-size: 14px; }
+.custom-cluster-icon.large, .cluster-icon.large { width: 64px; height: 64px; font-size: 16px; }
+
+/* Hide utility to prevent map unmounting */
+.hidden {
+  display: none !important;
+}
+
+/* Glassmorphic Sci-Fi Map Toggle */
+.map-toggle-container {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  display: flex;
+  background: rgba(10, 20, 40, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 4px 20px rgba(0, 217, 255, 0.15);
+}
+
+.map-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.map-toggle-btn.active {
+  background: var(--accent);
+  color: var(--primary-dark);
+  box-shadow: 0 0 10px rgba(0, 217, 255, 0.4);
+}
+
+.map-toggle-btn:hover:not(.active) {
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+}
 
 /* Sidebar entrance animation and extra whitespace for clean layout */
 .sidebar{padding-bottom:28px;display:flex;flex-direction:column}

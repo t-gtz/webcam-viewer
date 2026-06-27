@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import MapComponent from './components/MapComponent';
+import LeafletMap from './components/LeafletMap';
+import GlobeMap from './components/GlobeMap';
+import MapToggle from './components/MapToggle';
 import VideoPlayer from './components/VideoPlayer';
 import SearchBar from './components/SearchBar';
 import WebcamList from './components/WebcamList';
@@ -14,6 +16,12 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mapMode, setMapMode] = useState(() => localStorage.getItem('mapMode') ?? 'flat');
+
+  const handleMapModeChange = (mode) => {
+    setMapMode(mode);
+    localStorage.setItem('mapMode', mode);
+  };
 
   // Lade Webcams beim Start
   useEffect(() => {
@@ -144,7 +152,8 @@ export default function App() {
             </div>
           )}
 
-          {selectedWebcam ? (
+          {/* Render Webcam Video view container when selected */}
+          {selectedWebcam && (
             <div className="webcam-view">
               <div className="webcam-header">
                 <button 
@@ -193,16 +202,30 @@ export default function App() {
                 )}
               </div>
             </div>
-          ) : (
-            <div className="map-view">
-              <MapComponent
+          )}
+
+          {/* Keep maps mounted and toggle visibility with .hidden class */}
+          <div className={`map-view ${selectedWebcam ? 'hidden' : ''}`}>
+            <MapToggle mode={mapMode} onChange={handleMapModeChange} />
+            
+            <div className={mapMode === 'flat' ? '' : 'hidden'} style={{ height: '100%', width: '100%' }}>
+              <LeafletMap
                 webcams={displayWebcams}
                 onMarkerClick={handleSelectWebcam}
                 selectedWebcam={selectedWebcam}
                 favorites={favorites}
               />
             </div>
-          )}
+            
+            <div className={mapMode === 'globe' ? '' : 'hidden'} style={{ height: '100%', width: '100%' }}>
+              <GlobeMap
+                webcams={displayWebcams}
+                onMarkerClick={handleSelectWebcam}
+                selectedWebcam={selectedWebcam}
+                favorites={favorites}
+              />
+            </div>
+          </div>
         </div>
       </div>
 

@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet.markercluster';
+import { buildMarkerEl, buildClusterEl } from '../utils/markerUtils';
 
-export default function MapComponent({
+export default function LeafletMap({
   webcams,
   onMarkerClick,
   selectedWebcam,
@@ -10,6 +11,16 @@ export default function MapComponent({
 }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
+
+  // Trigger size recalculation when the map is revealed
+  useEffect(() => {
+    if (mapInstanceRef.current && !selectedWebcam) {
+      // Small timeout to ensure display: block is active
+      setTimeout(() => {
+        mapInstanceRef.current.invalidateSize();
+      }, 50);
+    }
+  }, [selectedWebcam]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -32,12 +43,9 @@ export default function MapComponent({
         maxClusterRadius: 80,
         iconCreateFunction: (cluster) => {
           const count = cluster.getChildCount();
-          let size = 'large';
-          if (count < 10) size = 'small';
-          else if (count < 100) size = 'medium';
-
+          const el = buildClusterEl(count);
           return L.divIcon({
-            html: `<div class="cluster-icon ${size}">${count}</div>`,
+            html: el,
             iconSize: [44, 44],
             className: 'custom-cluster-icon'
           });
@@ -54,6 +62,10 @@ export default function MapComponent({
 
     const markerGroup = map._markerGroup;
 
+    // Clear existing markers to force rebuilding with correct favorite/selection state
+    markerGroup.clearLayers();
+    map._addedIds.clear();
+
     // Hilfsfunktion: prüfe ob Punkt in sichtbaren Bounds
     const isInView = (cam) => {
       try {
@@ -64,24 +76,16 @@ export default function MapComponent({
       }
     };
 
-    // Erzeuge einen individuellen DivIcon Marker mit Puls-Effekt
+    // Erzeuge einen individuellen DivIcon Marker mit Puls-Effekt using shared utils
     const createDivMarker = (cam) => {
-      const isFavorite = favorites.has(cam.id);
-      const isSelected = selectedWebcam?.id === cam.id;
-      const stateClass = cam.is_active ? 'online' : 'offline';
-      const favClass = isFavorite ? 'fav' : '';
-      const selClass = isSelected ? 'selected' : '';
-
-      const html = `
-        <div class="pulse-marker ${stateClass} ${favClass} ${selClass}" title="${cam.name}">
-          <span class="dot"></span>
-          <span class="pulse"></span>
-        </div>
-      `;
+      const el = buildMarkerEl(cam, {
+        isFav: favorites.has(cam.id),
+        isSelected: selectedWebcam?.id === cam.id
+      });
 
       const icon = L.divIcon({
         className: 'custom-div-icon',
-        html,
+        html: el,
         iconSize: [28, 28],
         iconAnchor: [14, 14]
       });
@@ -89,7 +93,7 @@ export default function MapComponent({
       const marker = L.marker([cam.latitude, cam.longitude], { icon });
 
       marker.bindPopup(
-        `<div class="map-popup"><h4>${cam.name}</h4><p>${cam.city}, ${cam.country}</p><p class=\"status\">${cam.is_active ? '🟢 Online' : '🔴 Offline'}</p></div>`,
+        `<div class="map-popup"><h4>${cam.name}</h4><p>${cam.city}, ${cam.country}</p><p class="status">${cam.is_active ? '🟢 Online' : '🔴 Offline'}</p></div>`,
         { maxWidth: 280 }
       );
 
@@ -120,13 +124,6 @@ export default function MapComponent({
 
     // Initial: lade erste sichtbaren Marker und ein paar in der Nähe
     addVisibleMarkers(120);
-
-    // Wenn sich props ändern (z. B. Auswahl), aktualisiere Selektions-Darstellung: einfache, aber effektive Methode ist Neuaufbau
-    // Entferne Marker, die nicht mehr existieren
-    markerGroup.eachLayer(layer => {
-      // rudimentäre Aufräum-Strategie: entferne Layer falls zu viele fehlen
-      // (keine Aktion notwendig hier)
-    });
 
   }, [webcams, onMarkerClick, selectedWebcam, favorites]);
 
